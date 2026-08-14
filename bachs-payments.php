@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants.
-define( 'BACHS_PAYMENTS_VERSION', '1.0.2' );
+define( 'BACHS_PAYMENTS_VERSION', '1.0.4' );
 define( 'BACHS_PAYMENTS_PLUGIN_FILE', __FILE__ );
 define( 'BACHS_PAYMENTS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
