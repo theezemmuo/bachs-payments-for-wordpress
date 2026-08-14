@@ -3,8 +3,8 @@
  * Plugin Name:       Bachs Payments for WordPress
  * Plugin URI:        https://frameio.com.ng/bachs
  * Description:       The secure, native Bachs integration for WordPress and WooCommerce.
- * Version:           1.0.0
- * Author:            Bachs
+ * Version:           1.0.4
+ * Author:            Frameio
  * Author URI:        https://frameio.com.ng/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
@@ -12,43 +12,21 @@
  * Domain Path:       /languages
  */
 
-// If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
 }
 
-// Define plugin constants
-define( 'BACHS_VERSION', '1.0.0' );
-define( 'BACHS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'BACHS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+// Define plugin constants.
+define( 'BACHS_PAYMENTS_VERSION', '1.0.2' );
+define( 'BACHS_PAYMENTS_PLUGIN_FILE', __FILE__ );
+define( 'BACHS_PAYMENTS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
-// Load custom PSR-4 autoloader
-require_once BACHS_PLUGIN_DIR . 'src/autoload.php';
+// Include the core class.
+require_once BACHS_PAYMENTS_PLUGIN_DIR . 'includes/class-bachs-core.php';
 
-
-/**
- * The code that runs during plugin activation.
- */
-function activate_bachs_payments() {
-	// e.g. Setup custom tables, check dependencies, add capabilities
+// Initialize the plugin.
+function bachs_payments_init() {
+	// Initialize core class.
+	Bachs_Core::instance();
 }
-register_activation_hook( __FILE__, 'activate_bachs_payments' );
-
-/**
- * The code that runs during plugin deactivation.
- */
-function deactivate_bachs_payments() {
-	// e.g. Flush rewrite rules
-}
-register_deactivation_hook( __FILE__, 'deactivate_bachs_payments' );
-
-/**
- * Begins execution of the plugin.
- */
-function run_bachs_payments() {
-    if ( class_exists( 'Bachs\\Core\\Plugin' ) ) {
-        $plugin = \Bachs\Core\Plugin::get_instance();
-        $plugin->run();
-    }
-}
-add_action( 'plugins_loaded', 'run_bachs_payments' );
+add_action( 'plugins_loaded', 'bachs_payments_init', 0 );

@@ -1,26 +1,28 @@
 # bachs payments for wordpress
 
-a secure wordpress integration that provides a core php client for bachs and a bundled woocommerce payment gateway.
+the secure, native bachs integration for wordpress and woocommerce. 
 
-## what it does
+this plugin seamlessly connects your woocommerce store to the bachs api, allowing you to securely accept and process payments, manage refunds, and automatically sync payment statuses via webhooks.
 
-the plugin acts as a native payment method in woocommerce and securely handles the bachs checkout lifecycle. 
+## features & recent updates
 
-it forces server-side webhook verification as the single source of truth for payment states, avoiding frontend redirects as proof of payment. 
+* **dynamic environment switching** 
+  you no longer need to manually toggle between "sandbox" and "live" modes or juggle multiple sets of keys. simply paste your bachs api key into the woocommerce settings. the plugin automatically detects whether you are using a test key (e.g., `sk_sandbox_...`) or a live key, and dynamically routes all api requests and webhook validations to the correct bachs environment.
+  
+* **automatic sandbox currency fallback**
+  bachs does not currently support ngn (nigerian naira) balances in their sandbox environment. to prevent checkout errors during testing, this plugin includes a seamless fallback: if you are using a sandbox api key and your woocommerce store is set to ngn, the plugin will silently convert the api request to `usd`. webhooks returning a successful usd transaction will be matched against your ngn order and processed smoothly so you can fully test your checkout flow end-to-end. (note: this fallback is ignored in live mode, where ngn is passed normally).
 
-## architecture
+* **robust webhook security**
+  all incoming webhooks are strictly verified using an hmac sha256 signature generated from your webhook secret. the plugin also actively queries the bachs api to re-verify the transaction payload directly with the server, completely eliminating the risk of spoofed webhook payloads marking unpaid orders as completed.
 
-the plugin is split into two layers:
+* **idempotency protections**
+  the webhook handler protects your store from double-processing orders during simultaneous api retries by caching incoming event ids and gracefully ignoring duplicates.
 
-1. core bachs sdk
-- handles api authentication (live and sandbox).
-- manages checkout sessions, transaction verification, and refunds.
-- provides a webhook engine with cryptographic signature verification.
-- includes strict idempotency checks to prevent duplicate processing.
-- redacts sensitive api keys and headers from server logs.
+## setup instructions
 
-2. woocommerce adapter
-- registers bachs as a native payment gateway.
-- maps woocommerce order totals and currencies to bachs checkout sessions.
-- listens to webhook events to automatically update woocommerce order statuses (e.g. processing, failed, refunded).
-- supports admin refunds directly from the woocommerce order screen.
+1. **install and activate** the plugin in your wordpress dashboard.
+2. go to **woocommerce > settings > payments** and click "manage" on bachs.
+3. **api key**: paste your bachs api key (either live or sandbox). 
+4. **webhook url**: copy the displayed webhook url from the settings page and paste it into your bachs dashboard to create a new webhook endpoint.
+5. **webhook secret**: copy the webhook secret provided by the bachs dashboard and paste it into the woocommerce settings.
+6. click **save changes**. you can optionally click the **test connection** button to verify that your store is communicating correctly with bachs!
